@@ -33,6 +33,12 @@ MANIFEST
 *.manifest
 *.spec
 
+*.zip
+OpenSARUrbanDataset
+openSAR
+openSAR/
+OpenSARUrbanDataset/
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -127,3 +133,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+OpenSARUrbanDataset.zip
+OpenSARUrbanDataset.zip
