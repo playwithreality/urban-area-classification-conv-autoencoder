@@ -36,4 +36,20 @@ for images, labels in train_ds.take(1):
         plt.axis("off")
 plt.savefig("dataviz.png")
 
+#
 
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import Dense
+
+inputs = Input(shape=(100,100,3))
+#missing transformations
+conv = Conv2D(32, kernel_size=3, activation='relu')(inputs)#convolution
+model = Model(inputs=inputs, outputs=conv)
+
+print(model.summary())
+##end of summary should be (None, 1) in order to make model work
+
+#model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+#model.fit(train_ds, epochs=1, validation_data=validation_ds)
