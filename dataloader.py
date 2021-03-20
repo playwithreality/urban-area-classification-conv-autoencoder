@@ -2,9 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.preprocessing as preprocessing
+import tensorflow_io as tfio
 from os import listdir
 import pathlib
-
+import tifffile as tiffer
 
 def rgb_loader():
   data_dir = "./openSAR/patch_RGB"
@@ -28,7 +29,6 @@ def rgb_loader():
   )
   print("train classes", train_ds.class_names)
   print("validation classes", validation_ds.class_names)
-
   return train_ds, validation_ds
 
 def visualize_data(data):
@@ -59,7 +59,6 @@ def get_images(path):
   val_ds = list_ds.take(val_size)
 
   print("Sets", filecount, tf.data.experimental.cardinality(train_ds).numpy(), tf.data.experimental.cardinality(val_ds).numpy())
-
   return train_ds, val_ds
 
 def calib_loader():
@@ -67,7 +66,29 @@ def calib_loader():
   train_ds, val_ds = get_images(path)
   data_dir = pathlib.Path(path)
   class_names = np.array(sorted([item.name for item in data_dir.glob('openSar/patch_Calib') if item.name != "LICENSE.txt"]))
-  print("röh", class_names)
   labels = get_label(path)
   print("LABELS", labels)
+  return train_ds, val_ds
+
+
+
+def manual_calib_importer():
+  path = "openSar/patch_Calib"
+  classes = listdir(path)
+  images = []
+  image_classes = []
+  for c in classes:
+    files = listdir(path+"/"+c)
+    for file in files:
+      img = tiffer.imread(path+"/"+c+"/"+file, key=0)
+      images.append(img)
+      image_classes.append(c)
+  return tf.data.Dataset.from_tensor_slices((images, image_classes)), len(images)
+
+def get_manual_calib_data():
+  data, length = manual_calib_importer()
+  data= data.shuffle(length, reshuffle_each_iteration=False)
+  val_size = int(length * 0.2)
+  train_ds = data.skip(val_size)
+  val_ds = data.take(val_size)
   return train_ds, val_ds
