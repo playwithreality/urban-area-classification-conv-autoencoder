@@ -83,12 +83,16 @@ def manual_calib_importer():
       img = tiffer.imread(path+"/"+c+"/"+file, key=0)
       images.append(img)
       image_classes.append(c)
-  return tf.data.Dataset.from_tensor_slices((images, image_classes)), len(images)
+  return np.stack(images)/255, np.stack(image_classes), len(image_classes)
 
 def get_manual_calib_data():
-  data, length = manual_calib_importer()
-  data= data.shuffle(length, reshuffle_each_iteration=False)
-  val_size = int(length * 0.2)
-  train_ds = data.skip(val_size)
-  val_ds = data.take(val_size)
-  return train_ds, val_ds
+  x, y, length = manual_calib_importer()
+  length = len(x)
+  indices = np.random.permutation(x.shape[0])
+  train_size = int(length * 0.8)
+  train_x = x[:train_size]
+  train_y = y[:train_size]
+  test_x = x[train_size:]
+  test_y = y[train_size:]
+  print("Shapes: train_x: ", train_x.shape, "test_x", test_x.shape, "train_y", train_y.shape, "test_y", test_y.shape)
+  return train_x, train_y, test_x, test_y 
