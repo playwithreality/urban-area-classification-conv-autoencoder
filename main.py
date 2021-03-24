@@ -38,9 +38,10 @@ model = Model(inputs=inputs, outputs=output)
 print(model.summary())
 ##end of summary should be (None, 1) in order to make model work
 
-#model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
-#model.fit(x=train_x, y=train_y, epochs=1)
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
+#train_y and test_y should not be strings in order to work?
+#fitting = model.fit(train_x,train_y, validation_data=(test_x,test_y),epochs=1)
 
 #model = models.Sequential()
 #model.add(Conv2D(filters=32, kernel_size=3, activation='relu'))
