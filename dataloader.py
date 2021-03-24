@@ -85,8 +85,29 @@ def manual_calib_importer():
       image_classes.append(c)
   return np.stack(images)/255, np.stack(image_classes), len(image_classes)
 
+class_coversions = {
+  "airport": 1,
+  "denselow": 2,
+  "GeneralResidential": 3,
+  "highbuildings": 4,
+  "highway": 5,
+  "railway": 6,
+  "SingleBuilding": 7,
+  "Skyscraper": 8,
+  "StorageArea": 9,
+  "vegetation": 10
+}
+
+def convert_labels(y):
+  new_y = []
+  for i in y:
+    new_y.append(class_coversions.get(i))
+  return np.stack(new_y)
+
+
 def get_manual_calib_data():
   x, y, length = manual_calib_importer()
+  y = convert_labels(y)
   length = len(x)
   indices = np.random.permutation(x.shape[0])
   train_size = int(length * 0.8)
