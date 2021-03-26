@@ -86,22 +86,25 @@ def manual_calib_importer():
   return np.stack(images)/255, np.stack(image_classes), len(image_classes)
 
 class_coversions = {
-  "airport": 1,
-  "denselow": 2,
-  "GeneralResidential": 3,
-  "highbuildings": 4,
-  "highway": 5,
-  "railway": 6,
-  "SingleBuilding": 7,
-  "Skyscraper": 8,
-  "StorageArea": 9,
-  "vegetation": 10
+  "airport": 0,
+  "denselow": 1,
+  "GeneralResidential": 2,
+  "highbuildings": 3,
+  "highway": 4,
+  "railway": 5,
+  "SingleBuilding": 6,
+  "Skyscraper": 7,
+  "StorageArea": 8,
+  "vegetation": 9
 }
 
+#encodes in one-hot format
 def convert_labels(y):
   new_y = []
   for i in y:
-    new_y.append(class_coversions.get(i))
+    array = [0,0,0,0,0,0,0,0,0,0]
+    array[class_coversions.get(i)] = 1
+    new_y.append(array)
   return np.stack(new_y)
 
 
@@ -111,9 +114,11 @@ def get_manual_calib_data():
   length = len(x)
   indices = np.random.permutation(x.shape[0])
   train_size = int(length * 0.8)
-  train_x = x[:train_size]
-  train_y = y[:train_size]
-  test_x = x[train_size:]
-  test_y = y[train_size:]
+  train_indices = indices[:train_size]
+  test_indices = indices[train_size:]
+  train_x = x[train_indices]
+  train_y = y[train_indices]
+  test_x = x[test_indices]
+  test_y = y[test_indices]
   print("Shapes: train_x: ", train_x.shape, "test_x", test_x.shape, "train_y", train_y.shape, "test_y", test_y.shape)
   return train_x, train_y, test_x, test_y 
