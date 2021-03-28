@@ -6,6 +6,7 @@ from tensorflow.keras.layers import AveragePooling2D, Conv2D, Dense
 from tensorflow.keras.layers import Dropout, Flatten, Input
 from tensorflow.keras import regularizers
 from tensorflow.keras import metrics
+from visualize import confusion
 
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
 print(tf.__version__)
@@ -43,12 +44,12 @@ metrics = [metrics.Accuracy()]
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=metrics)
 
 #one-hot encoded labels, required by categorical_crossentropy
-fitting = model.fit(train_x,train_y, validation_data=(test_x,test_y)
-epochs=1)
+fitting = model.fit(train_x,train_y, validation_data=(test_x,test_y), epochs=1)
 
 #currently output is only 1 values?
 out = model.predict(test_x)
 classes = out.argmax(axis=-1)
-for i in range(50):
+for i in range(1):
     print(out[i], classes[i], test_y[i], i)
 
+confusion(classes, test_y)
