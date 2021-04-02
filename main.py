@@ -7,7 +7,8 @@ from tensorflow.keras.layers import Dropout, Flatten, Input
 from tensorflow.keras import regularizers
 from tensorflow.keras import metrics
 from visualize import confusion
-from filters import glcm_mean, glcm_variance
+from filters import compute_glcm_results
+import numpy as np
 
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
 print(tf.__version__)
@@ -19,14 +20,22 @@ band = 0
 
 #train_ds, validation_ds = d.rgb_loader()
 #train_ds, val_ds = d.calib_loader()
-train_x, train_y, test_x, test_y = d.get_manual_calib_data(test_percentage, band)
+#d.get_manual_calib_data(test_percentage, band)
 
-#compute glcm mean and store in file for later use
-#glcm_mean_out_train = glcm_mean(train_x)
-#glcm_var_out_train = glcm_variance(train_x, glcm_mean_out_train)
-#glcm_mean_out_test = glcm_mean(test_x)
-#glcm_var_out_test = glcm_variance(test_x, glcm_mean_out_test)
-#exit()
+#I heard that laziness is a virtue and programmers are lazy people
+x_train = np.load(open('x_train.npy', 'rb'))
+y_train = np.load(open('y_train.npy', 'rb'))
+x_test = np.load(open('x_test.npy', 'rb'))
+y_test = np.load(open('y_test.npy', 'rb'))
+
+#compute glcm mean and store in file for later use, laziness level 2.0
+compute_glcm_results(x_train, x_test)
+exit()
+
+glcm_mean_train = np.load(open('glcm_mean_out_train.npy', 'rb'))
+glcm_var_train = np.load(open('glcm_var_out_train.npy', 'rb'))
+glcm_mean_test = np.load(open('glcm_mean_out_test.npy', 'rb'))
+glcm_var_test = np.load(open('glcm_var_out_test.npy', 'rb'))
 
 ### START NETWORK ######
 inputs = Input(shape=input_shape)
@@ -59,13 +68,13 @@ metrics = [metrics.Accuracy()]
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=metrics)
 
 #one-hot encoded labels, required by categorical_crossentropy
-fitting = model.fit(train_x,train_y, validation_data=(test_x,test_y), epochs=1)
+fitting = model.fit(x_train,y_train, validation_data=(x_test,y_test), epochs=1)
 
 #currently output is only 1 values?
-out = model.predict(test_x)
+out = model.predict(x_test)
 classes = out.argmax(axis=-1)
 for i in range(3):
-    print("Out:", out[i], "classes", classes[i], "test", test_y[i], "idx", i)
+    print("Out:", out[i], "classes", classes[i], "test", y_test[i], "idx", i)
     print("----")
 
-confusion(classes, test_y)
+confusion(classes, y_test)

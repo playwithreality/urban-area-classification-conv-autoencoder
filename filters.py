@@ -89,5 +89,16 @@ def glcm_variance(images, means):
 
     return np.stack(filtered_images)
 
+def compute_glcm_results(x_train, x_test):
+    glcm_mean_out_train = glcm_mean(x_train)
+    glcm_var_out_train = glcm_variance(x_train, glcm_mean_out_train)
+    glcm_mean_out_test = glcm_mean(x_test)
+    glcm_var_out_test = glcm_variance(x_test, glcm_mean_out_test)
+    np.save("glcm_mean_out_train", glcm_mean_out_train)
+    np.save("glcm_var_out_train", glcm_var_out_train )
+    np.save("glcm_mean_out_test", glcm_mean_out_test)
+    np.save("glcm_var_out_test", glcm_var_out_test)
+    return
+
 def gabor():
     arr = []

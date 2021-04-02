@@ -121,5 +121,11 @@ def get_manual_calib_data(test_percentage, band):
   y_train = convert_labels(y_train)
   y_test = convert_labels(y_test)
   print("Shapes: x_train: ", x_train.shape, "y_train", y_train.shape, "x_test", x_test.shape, "y_test", y_test.shape)
-  return x_train, y_train, x_test, y_test 
+  #Laziness is a virtue so lets store train values to speed up loading :D
+  np.save("x_train", x_train)
+  np.save("y_train", y_train)
+  np.save("x_test", x_test)
+  np.save("y_test", y_test)
+
+  return
 
