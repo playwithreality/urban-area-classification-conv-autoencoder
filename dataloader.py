@@ -72,8 +72,7 @@ def calib_loader():
   return train_ds, val_ds
 
 
-
-def manual_calib_importer():
+def manual_calib_importer(band):
   path = "openSar/patch_Calib"
   classes = listdir(path)
   images = []
@@ -82,9 +81,9 @@ def manual_calib_importer():
     files = listdir(path+"/"+c)
     for file in files:
       img = tiffer.imread(path+"/"+c+"/"+file, key=0)
-      images.append(img)
+      images.append(img[:,:,band])
       image_classes.append(c)
-  return np.stack(images)/255, np.stack(image_classes), len(image_classes)
+  return np.stack(images)/np.max(images), np.stack(image_classes), len(image_classes)
 
 class_coversions = {
   "airport": 0,
@@ -116,8 +115,8 @@ def stratified_sampling(test_percentage, x, y):
       return x_train, y_train, x_test, y_test
 
 
-def get_manual_calib_data(test_percentage):
-  x, y, length = manual_calib_importer()
+def get_manual_calib_data(test_percentage, band):
+  x, y, length = manual_calib_importer(band)
   x_train, y_train, x_test, y_test = stratified_sampling(test_percentage, x, y)
   y_train = convert_labels(y_train)
   y_test = convert_labels(y_test)

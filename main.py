@@ -7,17 +7,28 @@ from tensorflow.keras.layers import Dropout, Flatten, Input
 from tensorflow.keras import regularizers
 from tensorflow.keras import metrics
 from visualize import confusion
+from filters import glcm_mean, glcm_variance
 
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
 print(tf.__version__)
 
 ##any config values
 test_percentage = 0.2
-input_shape = (100,100,2)
+input_shape = (100,100,1)
+band = 0
+
 #train_ds, validation_ds = d.rgb_loader()
 #train_ds, val_ds = d.calib_loader()
-train_x, train_y, test_x, test_y = d.get_manual_calib_data(test_percentage)
+train_x, train_y, test_x, test_y = d.get_manual_calib_data(test_percentage, band)
 
+#compute glcm mean and store in file for later use
+#glcm_mean_out_train = glcm_mean(train_x)
+#glcm_var_out_train = glcm_variance(train_x, glcm_mean_out_train)
+#glcm_mean_out_test = glcm_mean(test_x)
+#glcm_var_out_test = glcm_variance(test_x, glcm_mean_out_test)
+#exit()
+
+### START NETWORK ######
 inputs = Input(shape=input_shape)
 
 #convolutional layer
