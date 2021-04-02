@@ -20,18 +20,26 @@ def update_point(current):
 #https://stackoverflow.com/questions/51930312/how-to-include-a-custom-filter-in-a-keras-based-cnn
 #We probably want to just return a numpy array and stack the GLCM and Gabor outputs.
 
-def glcm_mean():
+def glcm_apply_mean(image):
     #x, y both <= 99
     current = [0,0]
     while not current[1] == 100:
-        c
+        center_point = image[current[0], current[1]]
         print("current", current)
         current = update_point(current)
 
+def glcm_filters(images):
+    filtered_images = []
+    for image in images:
+        filtered_images.append(glcm_apply_mean(image))
 
-def glcm_variance():
-    arr = []
+def glcm_apply_variance(images):
+    current = [0,0]
 
+def glcm_variance(images):
+    filtered_images = []
+    for image in images:
+        filtered_images.append(glcm_variance(image))
 
 def gabor():
     arr = []
