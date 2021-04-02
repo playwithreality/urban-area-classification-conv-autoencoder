@@ -118,8 +118,9 @@ def stratified_sampling(test_percentage, x, y):
 
 def get_manual_calib_data(test_percentage):
   x, y, length = manual_calib_importer()
-  y = convert_labels(y)
   x_train, y_train, x_test, y_test = stratified_sampling(test_percentage, x, y)
+  y_train = convert_labels(y_train)
+  y_test = convert_labels(y_test)
   print("Shapes: x_train: ", x_train.shape, "y_train", y_train.shape, "x_test", x_test.shape, "y_test", y_test.shape)
   return x_train, y_train, x_test, y_test 
 
