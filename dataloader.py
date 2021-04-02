@@ -121,10 +121,32 @@ def get_manual_calib_data(test_percentage, band):
   y_train = convert_labels(y_train)
   y_test = convert_labels(y_test)
   print("Shapes: x_train: ", x_train.shape, "y_train", y_train.shape, "x_test", x_test.shape, "y_test", y_test.shape)
+  #split for saving to github
+
+  batch1 = int(12860/6)
+  batch2 = int(batch1*2)
+  batch3 = int(batch1*3)
+  batch4 = int(batch1*4)
+  batch5 = int(batch1*5)
+  x_train1 = x_train[:batch1]
+  x_train2 = x_train[batch1:batch2]
+  x_train3 = x_train[batch2:batch3]
+  x_train4 = x_train[batch3:batch4]
+  x_train5 = x_train[batch4:batch5]
+  x_train6 = x_train[batch5:]
+  x_test1 = x_test[:int(3215/2)]
+  x_test2 = x_test[int(3215/2):]
   #Laziness is a virtue so lets store train values to speed up loading :D
-  np.save("x_train", x_train)
+  #print("size", x_train.size)
+  np.save("x_train1", x_train1)
+  np.save("x_train2", x_train2)
+  np.save("x_train3", x_train3)
+  np.save("x_train4", x_train4)
+  np.save("x_train5", x_train5)
+  np.save("x_train6", x_train6)
   np.save("y_train", y_train)
-  np.save("x_test", x_test)
+  np.save("x_test1", x_test1)
+  np.save("x_test2", x_test2)
   np.save("y_test", y_test)
 
   return
