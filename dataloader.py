@@ -6,6 +6,7 @@ import tensorflow_io as tfio
 from os import listdir
 import pathlib
 import tifffile as tiffer
+from sklearn.model_selection import StratifiedShuffleSplit
 
 def rgb_loader():
   data_dir = "./openSAR/patch_RGB"
@@ -107,18 +108,18 @@ def convert_labels(y):
     new_y.append(array)
   return np.stack(new_y)
 
+def stratified_sampling(test_percentage, x, y):
+    splits = StratifiedShuffleSplit(test_size=test_percentage, random_state=2)
+    for train_index, test_index in splits.split(x,y):
+      x_train, x_test = x[train_index], x[test_index]
+      y_train, y_test = y[train_index], y[test_index]
+      return x_train, y_train, x_test, y_test
 
-def get_manual_calib_data():
+
+def get_manual_calib_data(test_percentage):
   x, y, length = manual_calib_importer()
   y = convert_labels(y)
-  length = len(x)
-  indices = np.random.permutation(x.shape[0])
-  train_size = int(length * 0.8)
-  train_indices = indices[:train_size]
-  test_indices = indices[train_size:]
-  train_x = x[train_indices]
-  train_y = y[train_indices]
-  test_x = x[test_indices]
-  test_y = y[test_indices]
-  print("Shapes: train_x: ", train_x.shape, "test_x", test_x.shape, "train_y", train_y.shape, "test_y", test_y.shape)
-  return train_x, train_y, test_x, test_y 
+  x_train, y_train, x_test, y_test = stratified_sampling(test_percentage, x, y)
+  print("Shapes: x_train: ", x_train.shape, "y_train", y_train.shape, "x_test", x_test.shape, "y_test", y_test.shape)
+  return x_train, y_train, x_test, y_test 
+

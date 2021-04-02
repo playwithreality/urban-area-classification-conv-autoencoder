@@ -24,6 +24,7 @@ def glcm_mean():
     #x, y both <= 99
     current = [0,0]
     while not current[1] == 100:
+        c
         print("current", current)
         current = update_point(current)
 
