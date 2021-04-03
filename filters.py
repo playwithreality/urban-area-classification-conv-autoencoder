@@ -1,101 +1,43 @@
 import math
 import numpy as np
-import cv2
 from dataloader import get_prepared_means
 import multiprocessing as mp
+from gabor_filter_parts import gaborize_image
+from glcm_filter_parts import glcm_apply_mean, glcm_apply_variance
 
-window = 3
-window_ct = math.pow(2*window+1, 2)
-mean_weight = 1/window_ct
-var_weight = 1/pow(window_ct,2)
-
-cpu_pool = mp.Pool(mp.cpu_count())
-
-def update_point(current):
-    x = 0
-    y = 0
-    if current[0] == 99:
-        y = current[1] + 1
-        x = 0
-    else:
-        y = current[1]
-        x = current[0] + 1
-    return (x,y)
 
 #Generic instructions for custom keras filter
 #https://stackoverflow.com/questions/51930312/how-to-include-a-custom-filter-in-a-keras-based-cnn
 #We probably want to just return a numpy array and stack the GLCM and Gabor outputs.
 
-def glcm_apply_mean(image):
-    #x, y both <= 99
-    current = [0,0]
-    #init array for mean result
-    mean_array = np.zeros((100,100))
-    while not current[1] == 100:
-        values = []
-        start_x = current[0] - 1
-        start_y = current[1] - 1
-        for x in range(window):
-            for y in range(window):
-                check_x = start_x + x
-                check_y = start_y + y
-                #append padded value if beyond borders
-                if check_x < 0 or check_y < 0 or check_x > 99 or check_y > 99:
-                    values.append(0)
-                else:
-                    values.append(image[check_x, check_y])
-        #compute GLCM mean for coordinate x,y with window size w
-        mean_result = mean_weight * np.sum(values)
-        #append value to the point for original image center point
-        mean_array[current[0], current[1]] = mean_result
-        #refresh to next index and repeat
-        current = update_point(current)
-    return mean_array
 
 def glcm_mean(images):
     #images with mean values
-    filtered_images = []
-    id = 0
-    for image in images:
-        if (id % 100) == 0:
-            print("current glcm mean id", id)
-        filtered_images.append(glcm_apply_mean(image))
-        id = id + 1
-    
-    return np.stack(filtered_images)
+    cpu_pool = mp.Pool(mp.cpu_count())
+    filtered_images = cpu_pool.map(glcm_apply_mean,[image for image in images])
+    cpu_pool.close()
+    filtered_stack = np.stack(filtered_images)
+    return filtered_stack[..., np.newaxis]
 
-def glcm_apply_variance(image, mean):
-     #x, y both <= 99
-    current = [0,0]
-    #init array for mean result
-    variance_array = np.zeros((100,100))
-    while not current[1] == 100:
-        values = []
-        start_x = current[0] - 1
-        start_y = current[1] - 1
-        for x in range(window):
-            for y in range(window):
-                check_x = start_x + x
-                check_y = start_y + y
-                #append padded value if beyond borders
-                if check_x < 0 or check_y < 0 or check_x > 99 or check_y > 99:
-                    values.append(0)
-                else:
-                    val = image[check_x, check_y]
-                    m = mean[check_x, check_y]
-                    values.append(math.pow(val-m,2) )
-        variance_array[current[0], current[1]] = np.sum(values) * var_weight
-        current = update_point(current)
-    return variance_array
 
 def glcm_variance(images, means):
-    filtered_images = []
-    for i in range(int(images.shape[0])):
-        if (i % 100) == 0:
-            print("current glcm var id", i)
-        filtered_images.append(glcm_apply_variance(images[i], means[i]))
+    cpu_pool = mp.Pool(mp.cpu_count())
+    filtered_images = cpu_pool.map(glcm_apply_variance(images[id], means[id]), [int(id) for id in range(images.shape[0])])
+    cpu_pool.close()
+    filtered_stack = np.stack(filtered_images)
+    return filtered_stack[..., np.newaxis]
 
-    return np.stack(filtered_images)
+def glcm_no_save(x_train, x_test):
+    print("mean train")
+    mean_train = glcm_mean(x_train)
+    print("mean test")
+    mean_test = glcm_mean(x_test)
+    print("var train")
+    var_train = glcm_variance(x_train, mean_train)
+    print("var test")
+    var_test = glcm_variance(x_test, mean_test)
+
+    return mean_train, var_train, mean_test, var_test
 
 def compute_glcm_results(x_train, x_test):
     mean_train = glcm_mean(x_train)
@@ -175,35 +117,10 @@ def compute_glcm_results(x_train, x_test):
     np.save("glcm/var_test3", var_test3)
     return
 
-def gabor_filters():
-    filters = []
-    glambda = np.pi / 2
-    #rotate over half-circle at 12.5 deg increments
-    for theta in np.arange(0, np.pi, np.pi/16):
-        kernel = cv2.getGaborKernel((window, window), 1.0, theta, glambda, 0, ktype=cv2.CV_32F)
-        kernel /= 1.5*kernel.sum()
-        filters.append(kernel)
-    return filters
 
-def apply_filter(image, kernel):
-    result = np.zeros(image)
-    #we always apply same kernel
-    fimg = cv2.filter2D(image, cv2.CV8UC3, kernel)
-    np.maximum(result, fimg, result)
-    return result
-
-filters = gabor_filters()
-filt_len = len(filters)
-
-def gaborize_image(image):
-    gabor_arr = []
-    for fid in range(filt_len):
-        res = apply_filter(image, filters[fid])
-        gabor_arr.append(res)
-    gabor_arr.append(np.stack(gabor_arr, axis=2))
-
-def gabor(images):
+def gabor(images, name_type):
+    cpu_pool = mp.Pool(mp.cpu_count())
     gabor_images = cpu_pool.map(gaborize_image,[image for image in images])
-    gabor_images = np.stack(gabor_images)
-    print("SHAPE", gabor_images.shape)
-    np.save("gabor/gabor_res", gabor_images)
+    print("IMAGBLYAT", len(gabor_images))
+    cpu_pool.close()
+    return gabor_images

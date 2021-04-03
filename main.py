@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Dropout, Flatten, Input
 from tensorflow.keras import regularizers
 from tensorflow.keras import metrics
 from visualize import confusion
-from filters import compute_glcm_results
+from filters import compute_glcm_results, gabor, glcm_no_save
 import numpy as np
 
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
@@ -29,8 +29,21 @@ x_train, y_train, x_test, y_test = d.get_prepared_data()
 ##this section will include glcm+gabor filter computation / loading ##
 #compute glcm mea+varn and store in file for later use, laziness level 2.0
 #compute_glcm_results(x_train, x_test)
-#mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
-d.gabor(x_train, x_test)
+mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
+#mean_train, var_train, mean_test, var_test = glcm_no_save(x_train, x_test)
+gabor_train = np.stack(gabor(x_train, "x_train"))
+gabor_test = np.stack(gabor(x_test, "x_test"))
+
+#Layer 1 result
+print("MEAN SHAPE", mean_train.shape)
+print("MEAN SHAPE", mean_test.shape)
+print("VAR SHAPE", var_train.shape)
+print("VAR SHAPE", var_test.shape)
+print("SHAPES TRAIN", mean_train.shape, var_train.shape, gabor_train.shape)
+print("SHAPES TEST", mean_test.shape, var_test.shape, gabor_test.shape)
+layer_1_train = np.concatenate((mean_train, var_train, gabor_train), axis=3)
+layer_1_test = np.concatenate((mean_test, var_test, gabor_test), axis=3)
+print("layer 1 shapes", layer_1_test.shape, layer_1_train.shape)
 
 ### START NETWORK ######
 inputs = Input(shape=input_shape)
