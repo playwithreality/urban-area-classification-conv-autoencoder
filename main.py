@@ -23,13 +23,14 @@ band = 0
 #d.get_manual_calib_data(test_percentage, band)
 
 #I heard that laziness is a virtue and programmers are lazy people
-#x_train, y_train, x_test, y_test = d.get_prepared_data()
+x_train, y_train, x_test, y_test = d.get_prepared_data()
 
 
 ##this section will include glcm+gabor filter computation / loading ##
 #compute glcm mea+varn and store in file for later use, laziness level 2.0
 #compute_glcm_results(x_train, x_test)
-mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
+#mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
+d.gabor(x_train, x_test)
 
 ### START NETWORK ######
 inputs = Input(shape=input_shape)
@@ -62,7 +63,7 @@ metrics = [metrics.Accuracy()]
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=metrics)
 
 #one-hot encoded labels, required by categorical_crossentropy
-fitting = model.fit(x_train,y_train, validation_data=(x_test,y_test), epochs=1)
+fitting = model.fit(x_train,y_train, validation_data=(test_x, test_y), epochs=1)
 
 #currently output is only 1 values?
 out = model.predict(x_test)
