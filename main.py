@@ -47,21 +47,21 @@ print("layer 1 shapes", layer_1_test.shape, layer_1_train.shape)
 
 ### START NETWORK ######
 inputs = Input(shape=input_shape)
-
+size = 32
 #convolutional layer
-conv = Conv2D(32, kernel_size=3, activation='relu')(inputs)
+conv = Conv2D(size, kernel_size=3, activation='relu')(inputs)
 #pool size was not specified we can probably use 2x2 or 3x3 pooling
 pooling = AveragePooling2D(pool_size=(3,3))(conv)
 
 #first auto encoder
-encoded1 = Dense(16, activation='relu', #non-linear activation
+encoded1 = Dense(size * 2, activation='relu', #non-linear activation, hidden units higher than size
                 activity_regularizer=regularizers.l1(10e-5))(pooling)#more sparse than 2nd autoencoder
-decoded1 = Dense(32, activation='softmax')(encoded1)#softmax applied
+decoded1 = Dense(size, activation='softmax')(encoded1)#softmax applied
 dropout1 = Dropout((0.2))(decoded1)#dropout with 0.2 rate
 
 #second auto encoder
-encoded2 = Dense(8, activation='relu') (dropout1)#non-linear activation
-decoded2 = Dense(16, activation='softmax')(encoded2)#softmax applied
+encoded2 = Dense(size / 2, activation='relu') (dropout1)#non-linear activation, hidden units lower than size
+decoded2 = Dense(size, activation='softmax')(encoded2)#softmax applied
 dropout2 = Dropout((0.2))(decoded2)
 #classification
 flatten = Flatten()(dropout2)
