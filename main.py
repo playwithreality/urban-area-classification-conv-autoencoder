@@ -23,12 +23,12 @@ band = 0
 #d.get_manual_calib_data(test_percentage, band)
 
 #I heard that laziness is a virtue and programmers are lazy people
-x_train, y_train, x_test, y_test = d.get_prepared_data()
+#x_train, y_train, x_test, y_test = d.get_prepared_data()
 
 
 ##this section will include glcm+gabor filter computation / loading ##
 #compute glcm mea+varn and store in file for later use, laziness level 2.0
-compute_glcm_results(x_train, x_test)
+#compute_glcm_results(x_train, x_test)
 mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
 
 ### START NETWORK ######

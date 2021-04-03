@@ -207,7 +207,7 @@ def get_prepared_glcm():
   var_train10 = np.load(open('glcm/var_train10.npy', 'rb'))
   var_test1 = np.load(open('glcm/var_test1.npy', 'rb'))
   var_test2 = np.load(open('glcm/var_test2.npy', 'rb'))
-  var_test2 = np.load(open('glcm/var_test3.npy', 'rb'))
+  var_test3 = np.load(open('glcm/var_test3.npy', 'rb'))
 
   mean_train = np.concatenate((mean_train1, mean_train2, mean_train3, mean_train4, mean_train5, 
                               mean_train6, mean_train7, mean_train8, mean_train9, mean_train10))
