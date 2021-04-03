@@ -9,7 +9,7 @@ window_ct = math.pow(2*window+1, 2)
 mean_weight = 1/window_ct
 var_weight = 1/pow(window_ct,2)
 
-mp.Pool(mp.cpu_count())
+cpu_pool = mp.Pool(mp.cpu_count())
 
 def update_point(current):
     x = 0
@@ -192,19 +192,18 @@ def apply_filter(image, kernel):
     np.maximum(result, fimg, result)
     return result
 
+filters = gabor_filters()
+filt_len = len(filters)
+
+def gaborize_image(image):
+    gabor_arr = []
+    for fid in range(filt_len):
+        res = apply_filter(image, filters[fid])
+        gabor_arr.append(res)
+    gabor_arr.append(np.stack(gabor_arr, axis=2))
+
 def gabor(images):
-    images_len = images.shape[0]
-    filters = gabor_filters()
-    filt_len = len(filters)
-    gabor_images = []
-    for id in range(images.shape[0]):
-        gabor_arr = []
-        for fid in range(filt_len):
-            res = apply_filter(images[id], filters[fid])
-            gabor_arr.append(res)
-        gabor_arr[id].append(np.stack(gabor_arr, axis=2))
-        if (id % 100) == 0:
-            print("id:", id)
+    gabor_images = cpu_pool.map(gaborize_image,[image for image in images])
     gabor_images = np.stack(gabor_images)
     print("SHAPE", gabor_images.shape)
     np.save("gabor/gabor_res", gabor_images)
