@@ -196,13 +196,15 @@ def gabor(images):
     images_len = images.shape[0]
     filters = gabor_filters()
     filt_len = len(filters)
-    arr = np.zeros((images_len, 100, 100, filt_len))
+    gabor_images = []
     for id in range(images.shape[0]):
-        filter_arr = arr[id]
+        gabor_arr = []
         for fid in range(filt_len):
             res = apply_filter(images[id], filters[fid])
-            filter_arr[:][:][fid] = res
-        arr[id] = filter_arr
+            gabor_arr.append(res)
+        gabor_arr[id].append(np.stack(gabor_arr, axis=2))
         if (id % 100) == 0:
             print("id:", id)
-    np.save("gabor/gabor_res", arr)
+    gabor_images = np.stack(gabor_images)
+    print("SHAPE", gabor_images.shape)
+    np.save("gabor/gabor_res", gabor_images)
