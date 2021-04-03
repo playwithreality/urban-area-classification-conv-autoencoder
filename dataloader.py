@@ -151,3 +151,68 @@ def get_manual_calib_data(test_percentage, band):
 
   return
 
+def get_prepared_data():
+  x_train1 = np.load(open('data/x_train1.npy', 'rb'))
+  x_train2 = np.load(open('data/x_train2.npy', 'rb'))
+  x_train3 = np.load(open('data/x_train3.npy', 'rb'))
+  x_train4 = np.load(open('data/x_train4.npy', 'rb'))
+  x_train5 = np.load(open('data/x_train5.npy', 'rb'))
+  x_train6 = np.load(open('data/x_train6.npy', 'rb'))
+  y_train = np.load(open('data/y_train.npy', 'rb'))
+  x_test1 = np.load(open('data/x_test1.npy', 'rb'))
+  x_test2 = np.load(open('data/x_test2.npy', 'rb'))
+  y_test = np.load(open('data/y_test.npy', 'rb'))
+
+  x_train = np.concatenate((x_train1, x_train2, x_train3, x_train4, x_train5, x_train6))
+  x_test = np.concatenate((x_test1, x_test2))
+  return x_train, y_train, x_test, y_test
+
+def get_prepared_means():
+  mean_train1 = np.load(open('glcm/mean_train1.npy', 'rb'))
+  mean_train2 = np.load(open('glcm/mean_train2.npy', 'rb'))
+  mean_train3 = np.load(open('glcm/mean_train3.npy', 'rb'))
+  mean_train4 = np.load(open('glcm/mean_train4.npy', 'rb'))
+  mean_train5 = np.load(open('glcm/mean_train5.npy', 'rb'))
+  mean_train6 = np.load(open('glcm/mean_train6.npy', 'rb'))
+  mean_test1 = np.load(open('glcm/mean_test1.npy', 'rb'))
+  mean_test2 = np.load(open('glcm/mean_test2.npy', 'rb'))
+  mean_train = np.concatenate((mean_train1, mean_train2, mean_train3, mean_train4, mean_train5, mean_train6))
+  mean_test = np.concatenate((mean_test1, mean_test2))
+  return mean_train, mean_test
+
+def get_prepared_glcm():
+  mean_train1 = np.load(open('glcm/mean_train1.npy', 'rb'))
+  mean_train2 = np.load(open('glcm/mean_train2.npy', 'rb'))
+  mean_train3 = np.load(open('glcm/mean_train3.npy', 'rb'))
+  mean_train4 = np.load(open('glcm/mean_train4.npy', 'rb'))
+  mean_train5 = np.load(open('glcm/mean_train5.npy', 'rb'))
+  mean_train6 = np.load(open('glcm/mean_train6.npy', 'rb'))
+  mean_train7 = np.load(open('glcm/mean_train7.npy', 'rb'))
+  mean_train8 = np.load(open('glcm/mean_train8.npy', 'rb'))
+  mean_train9 = np.load(open('glcm/mean_train9.npy', 'rb'))
+  mean_train10 = np.load(open('glcm/mean_train10.npy', 'rb'))
+  mean_test1 = np.load(open('glcm/mean_test1.npy', 'rb'))
+  mean_test2 = np.load(open('glcm/mean_test2.npy', 'rb'))
+  mean_test3 = np.load(open('glcm/mean_test3.npy', 'rb'))
+
+  var_train1 = np.load(open('glcm/var_train1.npy', 'rb'))
+  var_train2 = np.load(open('glcm/var_train2.npy', 'rb'))
+  var_train3 = np.load(open('glcm/var_train3.npy', 'rb'))
+  var_train4 = np.load(open('glcm/var_train4.npy', 'rb'))
+  var_train5 = np.load(open('glcm/var_train5.npy', 'rb'))
+  var_train6 = np.load(open('glcm/var_train6.npy', 'rb'))
+  var_train7 = np.load(open('glcm/var_train7.npy', 'rb'))
+  var_train8 = np.load(open('glcm/var_train8.npy', 'rb'))
+  var_train9 = np.load(open('glcm/var_train9.npy', 'rb'))
+  var_train10 = np.load(open('glcm/var_train10.npy', 'rb'))
+  var_test1 = np.load(open('glcm/var_test1.npy', 'rb'))
+  var_test2 = np.load(open('glcm/var_test2.npy', 'rb'))
+  var_test2 = np.load(open('glcm/var_test3.npy', 'rb'))
+
+  mean_train = np.concatenate((mean_train1, mean_train2, mean_train3, mean_train4, mean_train5, 
+                              mean_train6, mean_train7, mean_train8, mean_train9, mean_train10))
+  mean_test = np.concatenate((mean_test1, mean_test2, mean_test3))
+  var_train = np.concatenate((var_train1, var_train2, var_train3, var_train4, var_train5, var_train6, var_train7, var_train8, var_train9, var_train10))
+  var_test = np.concatenate((var_test1, var_test2, var_test3))
+
+  return mean_train, var_train, mean_test, var_test

@@ -1,10 +1,15 @@
 import math
 import numpy as np
+import cv2
+from dataloader import get_prepared_means
+import multiprocessing as mp
 
 window = 3
 window_ct = math.pow(2*window+1, 2)
 mean_weight = 1/window_ct
 var_weight = 1/pow(window_ct,2)
+
+mp.Pool(mp.cpu_count())
 
 def update_point(current):
     x = 0
@@ -52,7 +57,8 @@ def glcm_mean(images):
     filtered_images = []
     id = 0
     for image in images:
-        print("current glcm mean id", id)
+        if (id % 100) == 0:
+            print("current glcm mean id", id)
         filtered_images.append(glcm_apply_mean(image))
         id = id + 1
     
@@ -79,26 +85,128 @@ def glcm_apply_variance(image, mean):
                     m = mean[check_x, check_y]
                     values.append(math.pow(val-m,2) )
         variance_array[current[0], current[1]] = np.sum(values) * var_weight
+        current = update_point(current)
+    return variance_array
 
 def glcm_variance(images, means):
     filtered_images = []
-    id = 0
-    for i in range(len(images)):
-        print("current glcm var id", i)
-        filtered_images.append(glcm_variance(images[i], means[i]))
+    for i in range(int(images.shape[0])):
+        if (i % 100) == 0:
+            print("current glcm var id", i)
+        filtered_images.append(glcm_apply_variance(images[i], means[i]))
 
     return np.stack(filtered_images)
 
 def compute_glcm_results(x_train, x_test):
-    glcm_mean_out_train = glcm_mean(x_train)
-    glcm_var_out_train = glcm_variance(x_train, glcm_mean_out_train)
-    glcm_mean_out_test = glcm_mean(x_test)
-    glcm_var_out_test = glcm_variance(x_test, glcm_mean_out_test)
-    np.save("glcm_mean_out_train", glcm_mean_out_train)
-    np.save("glcm_var_out_train", glcm_var_out_train )
-    np.save("glcm_mean_out_test", glcm_mean_out_test)
-    np.save("glcm_var_out_test", glcm_var_out_test)
+    mean_train = glcm_mean(x_train)
+    mean_test = glcm_mean(x_test)
+
+    batch1 = int(12860/10)
+    batch2 = int(batch1*2)
+    batch3 = int(batch1*3)
+    batch4 = int(batch1*4)
+    batch5 = int(batch1*5)
+    batch6 = int(batch1*6)
+    batch7 = int(batch1*7)
+    batch8 = int(batch1*8)
+    batch9 = int(batch1*9)
+    mean_train1 = mean_train[:batch1]
+    mean_train2 = mean_train[batch1:batch2]
+    mean_train3 = mean_train[batch2:batch3]
+    mean_train4 = mean_train[batch3:batch4]
+    mean_train5 = mean_train[batch4:batch5]
+    mean_train6 = mean_train[batch5:batch6]
+    mean_train7 = mean_train[batch6:batch7]
+    mean_train8 = mean_train[batch7:batch8]
+    mean_train9 = mean_train[batch8:batch9]
+    mean_train10 = mean_train[batch9:]
+    triplet1 = int(3215/3)
+    triplet2 = int(triplet1*2)
+    mean_test1 = mean_test[:triplet1]
+    mean_test2 = mean_test[triplet1:triplet2]
+    mean_test3 = mean_test[triplet2:]
+
+    np.save("glcm/mean_train1", mean_train1)
+    np.save("glcm/mean_train2", mean_train2)
+    np.save("glcm/mean_train3", mean_train3)
+    np.save("glcm/mean_train4", mean_train4)
+    np.save("glcm/mean_train5", mean_train5)
+    np.save("glcm/mean_train6", mean_train6)
+    np.save("glcm/mean_train7", mean_train7)
+    np.save("glcm/mean_train8", mean_train8)
+    np.save("glcm/mean_train9", mean_train9)
+    np.save("glcm/mean_train10", mean_train10)
+    np.save("glcm/mean_test1", mean_test1)
+    np.save("glcm/mean_test2", mean_test2)
+    np.save("glcm/mean_test3", mean_test3)
+    
+    #uncomment below if you have means already but need to recompute variances
+    #mean_train, mean_test = get_prepared_means()
+    print("var_train")
+    var_train = glcm_variance(x_train, mean_train)
+    print("var_test")
+    var_test = glcm_variance(x_test, mean_test)
+    var_train1 = var_train[:batch1]
+    var_train2 = var_train[batch1:batch2]
+    var_train3 = var_train[batch2:batch3]
+    var_train4 = var_train[batch3:batch4]
+    var_train5 = var_train[batch4:batch5]
+    var_train6 = var_train[batch5:batch6]
+    var_train7 = var_train[batch6:batch7]
+    var_train8 = var_train[batch7:batch8]
+    var_train9 = var_train[batch8:batch9]
+    var_train10 = var_train[batch9:]
+    var_test1 = var_test[:triplet1]
+    var_test2 = var_test[triplet1:triplet2]
+    var_test3 = var_test[triplet2:]
+
+    np.save("glcm/var_train1", var_train1)
+    np.save("glcm/var_train2", var_train2)
+    np.save("glcm/var_train3", var_train3)
+    np.save("glcm/var_train4", var_train4)
+    np.save("glcm/var_train5", var_train5)
+    np.save("glcm/var_train6", var_train6)
+    np.save("glcm/var_train7", var_train7)
+    np.save("glcm/var_train8", var_train8)
+    np.save("glcm/var_train9", var_train9)
+    np.save("glcm/var_train10", var_train10)
+    np.save("glcm/var_test1", var_test1)
+    np.save("glcm/var_test2", var_test2)
+    np.save("glcm/var_test3", var_test3)
     return
 
-def gabor():
-    arr = []
+def gabor_filters():
+    filters = []
+    glambda = np.pi / 2
+    #rotate over half-circle at 12.5 deg increments
+    for theta in np.arange(0, np.pi, np.pi/16):
+        kernel = cv2.getGaborKernel((window, window), 1.0, theta, glambda, 0, ktype=cv2.CV_32F)
+        kernel /= 1.5*kernel.sum()
+        filters.append(kernel)
+    print
+    return filters
+
+def apply_filter(image, filter):
+    result = np.zeros(image)
+    #we always apply same kernel
+    for k in filter:
+        fimg = cv2.filter2D(image, cv2.CV8UC3, k)
+        np.maximum(result, fimg, result)
+    return result
+
+def gabor(images):
+    images_len = images.shape[0]
+    filters = gabor_filters()
+    filt_len = len(filters)
+    arr = np.zeros((images_len, 100, 100, filt_len))
+
+
+    for id in range(images.shape[0]):
+        filter_arr = arr[id]
+        for fid in range(filt_len):
+            res = apply_filter(images[id], filters[fid])
+            filter_arr[:][:][fid] = res
+        arr[id] = filter_arr
+        if (id % 100) == 0:
+            print("id:", id)
+    np.save("gabor/gabor_res", arr)
