@@ -10,7 +10,8 @@ def gabor_filters():
     #rotate over half-circle at 12.5 deg increments
     for theta in np.arange(0, np.pi, np.pi/4):
         kernel = cv2.getGaborKernel((window, window), 1.0, theta, glambda, 0, ktype=cv2.CV_32F)
-        kernel /= 1.5*kernel.sum()
+        #kernel /= 1.5*kernel.sum()
+        print("KERNEL", kernel)
         filters.append(kernel)
     return filters
 

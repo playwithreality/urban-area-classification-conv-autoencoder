@@ -1,21 +1,17 @@
-import dataloader as d
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import AveragePooling2D, Conv2D, Dense
-from tensorflow.keras.layers import Dropout, Flatten, Input
-from tensorflow.keras import regularizers
-from tensorflow.keras import metrics
-from visualize import confusion
-from filters import compute_glcm_results, gabor, glcm_no_save
 import numpy as np
+
+import dataloader as d
+from visualize import confusion, plot_images
+from filters import compute_glcm_results, gabor, glcm_no_save
+from network import run_network
 
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
 print(tf.__version__)
 
 ##any config values
 test_percentage = 0.2
-input_shape = (100,100,1)
+#input_shape = (100,100,7)
 band = 0
 
 #train_ds, validation_ds = d.rgb_loader()
@@ -25,7 +21,6 @@ band = 0
 #I heard that laziness is a virtue and programmers are lazy people
 x_train, y_train, x_test, y_test = d.get_prepared_data()
 
-
 ##this section will include glcm+gabor filter computation / loading ##
 #compute glcm mea+varn and store in file for later use, laziness level 2.0
 #compute_glcm_results(x_train, x_test)
@@ -33,16 +28,12 @@ mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
 #mean_train, var_train, mean_test, var_test = glcm_no_save(x_train, x_test)
 gabor_train = np.stack(gabor(x_train, "x_train"))
 gabor_test = np.stack(gabor(x_test, "x_test"))
+original_train = x_train[..., np.newaxis]
+original_test = x_test[..., np.newaxis]
 
 #Layer 1 result
-print("MEAN SHAPE", mean_train.shape)
-print("MEAN SHAPE", mean_test.shape)
-print("VAR SHAPE", var_train.shape)
-print("VAR SHAPE", var_test.shape)
-print("SHAPES TRAIN", mean_train.shape, var_train.shape, gabor_train.shape)
-print("SHAPES TEST", mean_test.shape, var_test.shape, gabor_test.shape)
-layer_1_train = np.concatenate((mean_train, var_train, gabor_train), axis=3)
-layer_1_test = np.concatenate((mean_test, var_test, gabor_test), axis=3)
+layer_1_train = np.concatenate((original_train, mean_train, var_train, gabor_train), axis=3)
+layer_1_test = np.concatenate((original_test, mean_test, var_test, gabor_test), axis=3)
 print("layer 1 shapes", layer_1_test.shape, layer_1_train.shape)
 
 ### START NETWORK ######
@@ -86,3 +77,5 @@ for i in range(3):
     print("----")
 
 confusion(classes, y_test)
+
+#run_network(layer_1_train, layer_1_test, y_train, y_test)

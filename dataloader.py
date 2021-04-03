@@ -83,7 +83,7 @@ def manual_calib_importer(band):
       img = tiffer.imread(path+"/"+c+"/"+file, key=0)
       images.append(img[:,:,band])
       image_classes.append(c)
-  return np.stack(images)/np.max(images), np.stack(image_classes), len(image_classes)
+  return np.stack(images), np.stack(image_classes), len(image_classes)
 
 class_coversions = {
   "airport": 0,

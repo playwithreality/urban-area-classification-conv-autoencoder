@@ -121,6 +121,5 @@ def compute_glcm_results(x_train, x_test):
 def gabor(images, name_type):
     cpu_pool = mp.Pool(mp.cpu_count())
     gabor_images = cpu_pool.map(gaborize_image,[image for image in images])
-    print("IMAGBLYAT", len(gabor_images))
     cpu_pool.close()
     return gabor_images
