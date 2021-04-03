@@ -183,15 +183,13 @@ def gabor_filters():
         kernel = cv2.getGaborKernel((window, window), 1.0, theta, glambda, 0, ktype=cv2.CV_32F)
         kernel /= 1.5*kernel.sum()
         filters.append(kernel)
-    print
     return filters
 
-def apply_filter(image, filter):
+def apply_filter(image, kernel):
     result = np.zeros(image)
     #we always apply same kernel
-    for k in filter:
-        fimg = cv2.filter2D(image, cv2.CV8UC3, k)
-        np.maximum(result, fimg, result)
+    fimg = cv2.filter2D(image, cv2.CV8UC3, kernel)
+    np.maximum(result, fimg, result)
     return result
 
 def gabor(images):
@@ -199,8 +197,6 @@ def gabor(images):
     filters = gabor_filters()
     filt_len = len(filters)
     arr = np.zeros((images_len, 100, 100, filt_len))
-
-
     for id in range(images.shape[0]):
         filter_arr = arr[id]
         for fid in range(filt_len):
