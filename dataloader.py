@@ -187,7 +187,7 @@ def get_prepared_data():
   x_train = np.concatenate((x_train1, x_train2, x_train3, x_train4, x_train5, x_train6))
   x_test = np.concatenate((x_test1, x_test2))
 
-  x_train, y_train = downsample_data(x_train, y_train, 150)
+  x_train, y_train = downsample_data(x_train, y_train, 100)
   x_test, y_test = downsample_data(x_test, y_test, 75)
   return x_train, y_train, x_test, y_test
 

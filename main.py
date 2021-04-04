@@ -38,7 +38,7 @@ x_test = x_test * 6000
 
 ##this section will include glcm+gabor filter computation / loading ##
 #compute glcm mea+varn and store in file for later use, laziness level 2.0
-mean_train, var_train, mean_test, var_test = compute_glcm_results(x_train, x_test)
+#mean_train, var_train, mean_test, var_test = compute_glcm_results(x_train, x_test)
 #mean_train, var_train, mean_test, var_test = d.get_prepared_glcm()
 #mean_train, var_train, mean_test, var_test = glcm_no_save(x_train, x_test)
 gabor_train = np.stack(gabor(x_train, "x_train"))
@@ -49,9 +49,12 @@ original_test = x_test[..., np.newaxis]
 
 #print("CHECK SHAPES", original_train.shape, mean_train.shape, var_train.shape, gabor_train.shape)
 #Layer 1 result
-train = np.concatenate((original_train, mean_train, var_train, gabor_train), axis=3)
-test = np.concatenate((original_test, mean_test, var_test, gabor_test), axis=3)
+#train = np.concatenate((original_train, mean_train, var_train, gabor_train), axis=3)
+#test = np.concatenate((original_test, mean_test, var_test, gabor_test), axis=3)
 #print("layer 1 shapes", layer_1_test.shape, layer_1_train.shape)
+
+train = np.concatenate((original_train,gabor_train), axis=3)
+test = np.concatenate((original_test, gabor_test), axis=3)
 
 ##improve sampling for train, more convenient to do when everything is stacked already albeit less efficient
 #resampler(layer_1_train, y_train)
@@ -71,3 +74,12 @@ test = np.concatenate((original_test, mean_test, var_test, gabor_test), axis=3)
 #np.savetxt("results.txt", np.stack(results), delimiter=",", fmt = '% s')
 
 large_net(train, test, y_train, y_test)
+
+
+#model = tf.keras.applications.VGG16(
+#    weights=None,
+#    input_tensor=original_train,
+#    input_shape=(100,100,1)
+#)
+#model.build()
+#print(model.summary())
