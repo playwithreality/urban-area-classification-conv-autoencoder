@@ -9,13 +9,14 @@ from tensorflow.keras.constraints import max_norm
 from tensorflow.keras import metrics
 from visualize import confusion
 
-def check_some_data(x_train):
-    check1 = np.argwhere(np.isnan(x_train))
-    print("-------------------")
 
-def run_network(x_train, x_test, y_train, y_test, norm_val, activation, pool, opti):
+from tensorflow.config.experimental import list_physical_devices, set_memory_growth
+physical_devices = list_physical_devices('GPU')
+set_memory_growth(physical_devices[0], True)
+
+def run_network(x_train, x_test, y_train, y_test, norm_val, activation, opti):
     print("**********")
-    applypool = pool(2)
+    applypool = MaxPooling2D(2)
     #check_some_data(x_train)
     ### START NETWORK ######
     cnn = Sequential()
@@ -58,7 +59,7 @@ def run_network(x_train, x_test, y_train, y_test, norm_val, activation, pool, op
     cnn.build((1310, 100,100,7))
     #print(cnn.summary())
     #exit()
-    cnn.fit(x=x_train, y=y_train, epochs=6, verbose=0, validation_data=(x_test, y_test))
+    cnn.fit(x=x_train, y=y_train, epochs=6, validation_data=(x_test, y_test))
 
     #Output
     out = cnn.predict(x_test)
@@ -73,7 +74,8 @@ def run_network(x_train, x_test, y_train, y_test, norm_val, activation, pool, op
         if classes[i] == np.where(y_test[i] == 1)[0][0]:
             correct = correct + 1
     print(correct, "accuracy", correct/len(y_test))
-    print("current norm", norm_val, activation, pool, opti)
+    print("current norm", norm_val, activation, opti)
     print("-----\n\n")
+    return correct/len(y_test)
     #confusion(classes, y_test)
 

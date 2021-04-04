@@ -39,7 +39,7 @@ def autoencoder(x_train, y_train, x_test, y_test):
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=use_metrics)
 
     #one-hot encoded labels, required by categorical_crossentropy
-    model.fit(x_train,y_train, validation_data=(x_train, y_train), epochs=1)
+    model.fit(x_train,y_train, validation_data=(x_test, y_test), epochs=1)
 
     #currently output is only 1 values?
     out = model.predict(x_test)

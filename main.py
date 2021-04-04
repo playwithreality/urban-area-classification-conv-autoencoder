@@ -8,6 +8,7 @@ from visualize import confusion, plot_images
 from filters import compute_glcm_results, gabor, glcm_no_save
 from network import run_network
 from autoencoder import autoencoder
+from large_net import large_net
 #from resampler import resampler
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
 print(tf.__version__)
@@ -24,8 +25,8 @@ x_train, y_train, x_test, y_test = d.get_prepared_data()
 
 
 
-np.savetxt("train_onehot.csv", y_train, delimiter=",", fmt = '% s')
-np.savetxt("test_onehot.csv", y_train, delimiter=",", fmt = '% s')
+#np.savetxt("train_onehot.csv", y_train, delimiter=",", fmt = '% s')
+#np.savetxt("test_onehot.csv", y_train, delimiter=",", fmt = '% s')
 
 x_train = x_train * 6000
 x_test = x_test * 6000
@@ -57,13 +58,16 @@ test = np.concatenate((original_test, mean_test, var_test, gabor_test), axis=3)
 
 
 #autoencoder(layer_1_train, y_train, layer_1_test, y_test)
+#results = ["accuracy", "optimizer", "activation", "norms"]
 
-optimizer = ["sgd", "rmsprop", "Adam"]
-activations = ["relu", "sigmoid", "softmax", "softplus", "softsign", "tanh", "selu"]
-pooling = [MaxPooling2D, AveragePooling2D]
+#optimizer = ["rmsprop"]
+#activations = ["sigmoid"]
 
-for norms in np.arange(0.2, 2, 0.2):
-    for activation in activations:
-        for pool in pooling:
-            for opt in optimizer:
-                run_network(train, test, y_train, y_test, norms, activation, pool, optimizer)
+#for norms in np.arange(0.2, 2, 0.2):
+#    for activation in activations:
+#            for opt in optimizer:
+#                row = [run_network(train, test, y_train, y_test, norms, activation, opt), opt, activation, norms]
+#                results.append(row)
+#np.savetxt("results.txt", np.stack(results), delimiter=",", fmt = '% s')
+
+large_net(train, test, y_train, y_test)
