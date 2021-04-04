@@ -19,75 +19,39 @@ def large_net(x_train, x_test, y_train, y_test):
     ### START NETWORK ######
     cnn = Sequential()
     #Layer1
-    cnn.add(Conv2D(filters=16, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
+    cnn.add(Conv2D(filters=64, kernel_size=3, kernel_constraint=max_norm(norm_val), 
+                    padding="same", activity_regularizer=regularizers.l1(10e-5)))
     cnn.add(Activation(activation))
 
     #Layer2
-    cnn.add(Conv2D(filters=32, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Conv2D(filters=128, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
+    cnn.add(Activation("relu"))
 
     #Layer3
-    cnn.add(Conv2D(filters=64, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Conv2D(filters=258, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
+    cnn.add(Activation("relu"))
     #Layer4
-    cnn.add(Conv2D(filters=128, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
+    cnn.add(Activation("relu"))
     #Layer5
-    cnn.add(Conv2D(filters=256, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
+    cnn.add(Activation("relu"))
     #Layer6
     cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Activation("relu"))
     #Layer7
     cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Activation("relu"))
     #Layer8
     cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Activation("relu"))
     #Layer9
     cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer10
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer11
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer12
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer13
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer14
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer15
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer16
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer17
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer18
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer19
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-     #Layer20
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
-    #Layer21
-    cnn.add(Conv2D(filters=512, kernel_size=3, kernel_constraint=max_norm(norm_val), padding="same"))
-    cnn.add(Activation(activation))
+    cnn.add(Activation("relu"))
+
 
     #Dense
-    cnn.add(Dense(1024, activation=activation))
-    cnn.add(Dense(2048, activation=activation))
-    cnn.add(Dense(1, activation=activation))
+    cnn.add(Dense(1024, activation=activation, activity_regularizer=regularizers.l1(10e-5)))
     #cnn.add(Dense(2048, activation='tanh'))
     #cnn.add(Dense(4096, activation='tanh'))
     cnn.add(Flatten())
