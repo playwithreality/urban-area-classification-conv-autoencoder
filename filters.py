@@ -21,8 +21,11 @@ def glcm_mean(images):
 
 
 def glcm_variance(images, means):
+    pack = []
+    for i in range(images.shape[0]):
+        pack.append([images[i], means[i]])
     cpu_pool = mp.Pool(mp.cpu_count())
-    filtered_images = cpu_pool.map(glcm_apply_variance(images[id], means[id]), [int(id) for id in range(images.shape[0])])
+    filtered_images = cpu_pool.map(glcm_apply_variance, [p for p in pack])
     cpu_pool.close()
     filtered_stack = np.stack(filtered_images)
     return filtered_stack[..., np.newaxis]
@@ -40,9 +43,30 @@ def glcm_no_save(x_train, x_test):
     return mean_train, var_train, mean_test, var_test
 
 def compute_glcm_results(x_train, x_test):
+    print("mean train")
     mean_train = glcm_mean(x_train)
+    print("mean test")
     mean_test = glcm_mean(x_test)
+    print("var_train")
+    var_train = glcm_variance(x_train, mean_train)
+    print("var_test")
+    var_test = glcm_variance(x_test, mean_test)
 
+    #switch comment order below if you wish to save the data to a file to play with a larger set for example
+    return mean_train, var_train, mean_test, var_test
+    #save_results(mean_train, mean_test, var_train, var_test)
+
+    
+
+
+def gabor(images, name_type):
+    cpu_pool = mp.Pool(mp.cpu_count())
+    gabor_images = cpu_pool.map(gaborize_image,[image for image in images])
+    cpu_pool.close()
+    return gabor_images
+
+
+def save_results(mean_train, mean_test, var_train, var_test):
     batch1 = int(12860/10)
     batch2 = int(batch1*2)
     batch3 = int(batch1*3)
@@ -84,10 +108,6 @@ def compute_glcm_results(x_train, x_test):
     
     #uncomment below if you have means already but need to recompute variances
     #mean_train, mean_test = get_prepared_means()
-    print("var_train")
-    var_train = glcm_variance(x_train, mean_train)
-    print("var_test")
-    var_test = glcm_variance(x_test, mean_test)
     var_train1 = var_train[:batch1]
     var_train2 = var_train[batch1:batch2]
     var_train3 = var_train[batch2:batch3]
@@ -116,10 +136,3 @@ def compute_glcm_results(x_train, x_test):
     np.save("glcm/var_test2", var_test2)
     np.save("glcm/var_test3", var_test3)
     return
-
-
-def gabor(images, name_type):
-    cpu_pool = mp.Pool(mp.cpu_count())
-    gabor_images = cpu_pool.map(gaborize_image,[image for image in images])
-    cpu_pool.close()
-    return gabor_images

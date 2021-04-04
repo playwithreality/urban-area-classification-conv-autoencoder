@@ -72,18 +72,23 @@ def calib_loader():
   print("LABELS", labels)
   return train_ds, val_ds
 
-
+#employs undersampling as the dataset is extremely biased
 def manual_calib_importer(band):
   path = "openSar/patch_Calib"
   classes = listdir(path)
   images = []
   image_classes = []
+
   for c in classes:
     files = listdir(path+"/"+c)
+    id = 0
     for file in files:
+      if id == 200:
+        break
       img = tiffer.imread(path+"/"+c+"/"+file, key=0)
       images.append(img[:,:,band])
       image_classes.append(c)
+      id = id + 1
   return np.stack(images), np.stack(image_classes)
 
 class_coversions = {
@@ -124,33 +129,48 @@ def get_manual_calib_data(test_percentage, band):
   print("Shapes: x_train: ", x_train.shape, "y_train", y_train.shape, "x_test", x_test.shape, "y_test", y_test.shape)
   #split for saving to github
 
-  batch1 = int(12860/6)
-  batch2 = int(batch1*2)
-  batch3 = int(batch1*3)
-  batch4 = int(batch1*4)
-  batch5 = int(batch1*5)
-  x_train1 = x_train[:batch1]
-  x_train2 = x_train[batch1:batch2]
-  x_train3 = x_train[batch2:batch3]
-  x_train4 = x_train[batch3:batch4]
-  x_train5 = x_train[batch4:batch5]
-  x_train6 = x_train[batch5:]
-  x_test1 = x_test[:int(3215/2)]
-  x_test2 = x_test[int(3215/2):]
+  #batch1 = int(12860/6)
+  #batch2 = int(batch1*2)
+  #batch3 = int(batch1*3)
+  #batch4 = int(batch1*4)
+  #batch5 = int(batch1*5)
+  #x_train1 = x_train[:batch1]
+  #x_train2 = x_train[batch1:batch2]
+  #x_train3 = x_train[batch2:batch3]
+  #x_train4 = x_train[batch3:batch4]
+  #x_train5 = x_train[batch4:batch5]
+  #x_train6 = x_train[batch5:]
+  #x_test1 = x_test[:int(3215/2)]
+  #x_test2 = x_test[int(3215/2):]
   #Laziness is a virtue so lets store train values to speed up loading :D
   #print("size", x_train.size)
-  np.save("x_train1", x_train1)
-  np.save("x_train2", x_train2)
-  np.save("x_train3", x_train3)
-  np.save("x_train4", x_train4)
-  np.save("x_train5", x_train5)
-  np.save("x_train6", x_train6)
-  np.save("y_train", y_train)
-  np.save("x_test1", x_test1)
-  np.save("x_test2", x_test2)
-  np.save("y_test", y_test)
+  #np.save("x_train1", x_train1)
+  #np.save("x_train2", x_train2)
+  #np.save("x_train3", x_train3)
+  #np.save("x_train4", x_train4)
+  #np.save("x_train5", x_train5)
+  #np.save("x_train6", x_train6)
+  #np.save("y_train", y_train)
+  #np.save("x_test1", x_test1)
+  #np.save("x_test2", x_test2)
+  #np.save("y_test", y_test)
 
-  return
+  return x_train, y_train, x_test, y_test
+
+
+def downsample_data(x_large, y_large, limit):
+  under_y = []
+  under_x = []
+  found_arr = [0,0,0,0,0,0,0,0,0,0]
+  for y in y_large:
+    id = np.where(y == 1)[0][0]
+    if found_arr[id] < limit:
+      under_y.append(y)
+      under_x.append(x_large[id])
+      found_arr[id] = found_arr[id] + 1
+  print("Downsampled results to", found_arr)
+  return np.stack(under_x), np.stack(under_y)
+
 
 def get_prepared_data():
   x_train1 = np.load(open('data/x_train1.npy', 'rb'))
@@ -166,6 +186,9 @@ def get_prepared_data():
 
   x_train = np.concatenate((x_train1, x_train2, x_train3, x_train4, x_train5, x_train6))
   x_test = np.concatenate((x_test1, x_test2))
+
+  x_train, y_train = downsample_data(x_train, y_train, 150)
+  x_test, y_test = downsample_data(x_test, y_test, 75)
   return x_train, y_train, x_test, y_test
 
 def get_prepared_means():

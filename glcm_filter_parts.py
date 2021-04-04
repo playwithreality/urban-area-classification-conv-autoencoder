@@ -45,7 +45,9 @@ def glcm_apply_mean(image):
         current = update_point(current)
     return mean_array
 
-def glcm_apply_variance(image, mean):
+def glcm_apply_variance(p):
+    image = p[0]
+    mean = p[1]
     #x, y both <= 99
     current = [0,0]
     #init array for mean result
