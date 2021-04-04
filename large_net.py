@@ -44,7 +44,7 @@ def large_net(x_train, x_test, y_train, y_test):
     cnn.add(Activation("sigmoid"))
     #Layer6
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
-    cnn.add(Activation("relu"))
+    cnn.add(Activation("sigmoid"))
     cnn.add(Dropout(0.2))
     #Layer7
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
@@ -55,7 +55,7 @@ def large_net(x_train, x_test, y_train, y_test):
     cnn.add(Activation("sigmoid"))
     #Layer9
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
-    cnn.add(Activation("relu"))
+    cnn.add(Activation("sigmoid"))
     cnn.add(Dropout(0.2))
     #Layer10
     cnn.add(Conv2D(filters=1024, kernel_size=3, padding="same"))
@@ -65,7 +65,7 @@ def large_net(x_train, x_test, y_train, y_test):
     cnn.add(Activation("sigmoid"))
      #Layer12
     cnn.add(Conv2D(filters=1024, kernel_size=3, padding="same"))
-    cnn.add(Activation("relu"))
+    cnn.add(Activation("sigmoid"))
     cnn.add(Dropout(0.2))
     #Layer13
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
@@ -75,7 +75,7 @@ def large_net(x_train, x_test, y_train, y_test):
     cnn.add(Activation("sigmoid"))
     #Layer15
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
-    cnn.add(Activation("relu"))
+    cnn.add(Activation("sigmoid"))
     cnn.add(Dropout(0.2))
     #Layer16
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
