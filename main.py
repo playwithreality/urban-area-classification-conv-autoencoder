@@ -5,7 +5,7 @@ import dataloader as d
 from visualize import confusion, plot_images
 from filters import compute_glcm_results, gabor, glcm_no_save
 from network import run_network
-
+from autoencoder import autoencoder
 #We expect tensorflow >2.3.2, preferably 2.4 or greater
 print(tf.__version__)
 
@@ -36,46 +36,6 @@ layer_1_train = np.concatenate((original_train, mean_train, var_train, gabor_tra
 layer_1_test = np.concatenate((original_test, mean_test, var_test, gabor_test), axis=3)
 print("layer 1 shapes", layer_1_test.shape, layer_1_train.shape)
 
-### START NETWORK ######
-inputs = Input(shape=input_shape)
-size = 32
-#convolutional layer
-conv = Conv2D(size, kernel_size=3, activation='relu')(inputs)
-#pool size was not specified we can probably use 2x2 or 3x3 pooling
-pooling = AveragePooling2D(pool_size=(3,3))(conv)
 
-#first auto encoder
-encoded1 = Dense(size * 2, activation='relu', #non-linear activation, hidden units higher than size
-                activity_regularizer=regularizers.l1(10e-5))(pooling)#more sparse than 2nd autoencoder
-decoded1 = Dense(size, activation='softmax')(encoded1)#softmax applied
-dropout1 = Dropout((0.2))(decoded1)#dropout with 0.2 rate
-
-#second auto encoder
-encoded2 = Dense(size / 2, activation='relu') (dropout1)#non-linear activation, hidden units lower than size
-decoded2 = Dense(size, activation='softmax')(encoded2)#softmax applied
-dropout2 = Dropout((0.2))(decoded2)
-#classification
-flatten = Flatten()(dropout2)
-#changed from 1 to 10 due to one-hot
-output = Dense(10, activation='sigmoid')(flatten)
-model = Model(inputs=inputs, outputs=output)
-
-print(model.summary())
-##end of summary should be (None, 10) in order to make model work,
-##one-hot changed the output requirement
-metrics = [metrics.Accuracy()]
-model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=metrics)
-
-#one-hot encoded labels, required by categorical_crossentropy
-fitting = model.fit(x_train,y_train, validation_data=(test_x, test_y), epochs=1)
-
-#currently output is only 1 values?
-out = model.predict(x_test)
-classes = out.argmax(axis=-1)
-for i in range(3):
-    print("Out:", out[i], "classes", classes[i], "test", y_test[i], "idx", i)
-    print("----")
-
-confusion(classes, y_test)
-
-#run_network(layer_1_train, layer_1_test, y_train, y_test)
+#autoencoder(layer_1_train, y_train, layer_1_test, y_test)
+run_network(layer_1_train, layer_1_test, y_train, y_test)

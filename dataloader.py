@@ -4,6 +4,7 @@ import tensorflow as tf
 import tensorflow.keras.preprocessing as preprocessing
 import tensorflow_io as tfio
 from os import listdir
+import os
 import pathlib
 import tifffile as tiffer
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -83,7 +84,7 @@ def manual_calib_importer(band):
       img = tiffer.imread(path+"/"+c+"/"+file, key=0)
       images.append(img[:,:,band])
       image_classes.append(c)
-  return np.stack(images), np.stack(image_classes), len(image_classes)
+  return np.stack(images), np.stack(image_classes)
 
 class_coversions = {
   "airport": 0,
@@ -116,7 +117,7 @@ def stratified_sampling(test_percentage, x, y):
 
 
 def get_manual_calib_data(test_percentage, band):
-  x, y, length = manual_calib_importer(band)
+  x, y = manual_calib_importer(band)
   x_train, y_train, x_test, y_test = stratified_sampling(test_percentage, x, y)
   y_train = convert_labels(y_train)
   y_test = convert_labels(y_test)
