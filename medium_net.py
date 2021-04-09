@@ -13,11 +13,12 @@ from tensorflow.keras.layers import Dropout, Flatten, Input, MaxPooling2D
 from tensorflow.keras import regularizers
 from tensorflow.keras.constraints import max_norm
 from tensorflow.keras import metrics
+from tensorflow import keras
 from visualize import confusion
 
 
 
-def large_net(x_train, x_test, y_train, y_test):
+def medium_net(x_train, x_test, y_train, y_test):
     print("**********")
     activation = "sigmoid"
     #check_some_data(x_train)
@@ -42,27 +43,6 @@ def large_net(x_train, x_test, y_train, y_test):
     #Layer5
     cnn.add(Conv2D(filters=256, kernel_size=3, padding="same"))
     cnn.add(Activation("sigmoid"))
-    #Layer7
-    cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
-    cnn.add(Activation("sigmoid"))
-    cnn.add(MaxPooling2D(2))
-    #Layer8
-    cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
-    cnn.add(Activation("sigmoid"))
-    #Layer9
-    cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
-    cnn.add(Activation("sigmoid"))
-    cnn.add(Dropout(0.2))
-    #Layer10
-    cnn.add(Conv2D(filters=1024, kernel_size=3, padding="same"))
-    cnn.add(Activation("sigmoid"))
-     #Layer11
-    cnn.add(Conv2D(filters=1024, kernel_size=3, padding="same"))
-    cnn.add(Activation("sigmoid"))
-     #Layer12
-    cnn.add(Conv2D(filters=1024, kernel_size=3, padding="same"))
-    cnn.add(Activation("sigmoid"))
-    cnn.add(Dropout(0.2))
     #Layer13
     cnn.add(Conv2D(filters=512, kernel_size=3, padding="same"))
     cnn.add(Activation("sigmoid"))
@@ -85,8 +65,8 @@ def large_net(x_train, x_test, y_train, y_test):
     cnn.add(Flatten())
     cnn.add(Dense(10, activation="softmax"))
     #compile model, Adam or rmsprop
-    cnn.compile(optimizer="rmsprop", loss='categorical_crossentropy')
-    cnn.build((1310, 100,100,1))
+    cnn.compile(optimizer=keras.optimizers.RMSprop(learning_rate=0.1), loss='categorical_crossentropy')
+    cnn.build((2400, 100,100,2))
     print(cnn.summary())
     #exit()
     cnn.fit(x=x_train, y=y_train, epochs=6, validation_data=(x_test, y_test))

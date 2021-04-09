@@ -8,6 +8,7 @@ import os
 import pathlib
 import tifffile as tiffer
 from sklearn.model_selection import StratifiedShuffleSplit
+#from PIL import
 
 def rgb_loader():
   data_dir = "./openSAR/patch_RGB"
@@ -74,21 +75,23 @@ def calib_loader():
 
 #employs undersampling as the dataset is extremely biased
 def manual_calib_importer(band):
-  path = "openSar/patch_Calib"
+  path = "openSAR/patch_Calib"
   classes = listdir(path)
   images = []
   image_classes = []
 
   for c in classes:
+    print("Loading from category", c)
     files = listdir(path+"/"+c)
     id = 0
-    for file in files:
-      if id == 200:
-        break
-      img = tiffer.imread(path+"/"+c+"/"+file, key=0)
-      images.append(img[:,:,band])
-      image_classes.append(c)
-      id = id + 1
+    while id < 300:
+      for file in files:
+        if id == 300:
+          break
+        img = tiffer.imread(path+"/"+c+"/"+file, key=0)
+        images.append(img[:,:,band])
+        image_classes.append(c)
+        id = id + 1
   return np.stack(images), np.stack(image_classes)
 
 class_coversions = {
